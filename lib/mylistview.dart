@@ -9,13 +9,15 @@ class RandomWordsState extends State<RandomWords> {
 
   @override
   Widget build(BuildContext context) {
-    
     //final wordPair = WordPair.random();
     //return Text(wordPair.asPascalCase);
 
     return Scaffold(
       appBar: AppBar(
         title: Text('Random Words CamelCase'),
+        actions: <Widget>[
+          IconButton(icon: Icon(Icons.list), onPressed: pageWordsSaved),
+        ],
       ),
       body: _getListView(),
     );
@@ -48,7 +50,6 @@ class RandomWordsState extends State<RandomWords> {
     return ListView.builder(
         padding: const EdgeInsets.all(16.0),
         itemBuilder: (context, i) {
-          
           if (i.isOdd) return Divider();
 
           final index = i ~/ 2; // arredonda resultado da divisão
@@ -59,6 +60,37 @@ class RandomWordsState extends State<RandomWords> {
 
           return _getRowList(_randomWords[index]);
         });
+  }
+
+  void pageWordsSaved() {
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (BuildContext context) {
+          final Iterable<ListTile> words = _bufferWords.map(
+            (WordPair pair) {
+              return ListTile(
+                title: Text(
+                  pair.asPascalCase,
+                  style: _fontStyle,
+                ),
+              );
+            },
+          );
+
+          final List<Widget> wordsDivided = ListTile.divideTiles(
+            context: context,
+            tiles: words,
+          ).toList();
+
+          return Scaffold(
+            appBar: AppBar(
+              title: Text('Your Favorite Words'),
+            ),
+            body: ListView(children: wordsDivided),
+          );
+        },
+      ),
+    );
   }
 }
 
